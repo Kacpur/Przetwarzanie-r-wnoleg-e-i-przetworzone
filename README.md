@@ -1,0 +1,1 @@
+# Przetwarzanie-r-wnoleg-e-i-przetworzone
