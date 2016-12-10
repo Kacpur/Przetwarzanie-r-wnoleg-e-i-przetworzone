@@ -5,7 +5,7 @@ import IRC.bo.tak.message.ServMessage;
 import IRC.bo.tak.utils.CaseInsensitiveMap;
 
 import java.net.InetAddress;
-import java.nio.channels.SelectionKey;
+import java.nio.channels.SocketChannel;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.Map;
@@ -13,7 +13,7 @@ import java.util.Map.Entry;
 
 public class Client
 {
-    private SelectionKey key;
+    private SocketChannel channel;
     private Map<String, Channel> channels;
     private int pingtimer;
     private ConnectionState state;
@@ -24,27 +24,28 @@ public class Client
     private String pass;
     private int identTime;
 
-    public Client(SelectionKey key)
+    public Client(SocketChannel channel)
     {
-        this.key = key;
+        this.channel = channel;
         channels = Collections.synchronizedMap(new CaseInsensitiveMap<>());
         pingtimer = 100;
         nick = "*";
         user = new User("*", "0", "*", "");
         pass = "";
-        state = ConnectionState.UNIDENTIFIED;
+        state = null;
         identTime = -1;
+        host = channel.socket().getInetAddress();
     }
 
 
     public void sendMsg(ServMessage message)
     {
-        MsgHandler.getInstance().write(key, message);
+        MsgHandler.getInstance().write(channel, message);
     }
 
     public void sendMsgAndFlush(ServMessage message)
     {
-        MsgHandler.getInstance().write(key, message);
+        MsgHandler.getInstance().write(channel, message);
     }
 
     public void sendMsgToChans(ServMessage message)
@@ -124,14 +125,6 @@ public class Client
         return pingtimer;
     }
 
-    public SelectionKey getKey() {
-        return key;
-    }
-
-    public void setKey(SelectionKey key) {
-        this.key = key;
-    }
-
     public String getNick() {
         return nick;
     }
@@ -179,4 +172,9 @@ public class Client
     public void setIdentTime(int identTime) {
         this.identTime = identTime;
     }
+
+    public SocketChannel getChannel() {
+        return channel;
+    }
+
 }

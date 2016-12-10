@@ -37,7 +37,7 @@ public class Channel
         {
             Entry<String, Client> e = i.next();
             Client c = (Client) e.getValue();
-            MsgHandler.getInstance().write(c.getKey(),message);
+            MsgHandler.getInstance().write(c.getChannel(),message);
         }
     }
 
@@ -49,7 +49,7 @@ public class Channel
         {
             Entry<String, Client> e = i.next();
             Client c = (Client) e.getValue();
-            MsgHandler.getInstance().write(c.getKey(), message);
+            MsgHandler.getInstance().write(c.getChannel(), message);
         }
     }
 
@@ -65,7 +65,7 @@ public class Channel
             if (c.getNick().equals(client.getNick()))
                 continue;
 
-            MsgHandler.getInstance().write(c.getKey(), message);
+            MsgHandler.getInstance().write(c.getChannel(), message);
         }
     }
 
@@ -81,7 +81,7 @@ public class Channel
             if (c.getNick().equals(client.getNick()))
                 continue;
 
-            MsgHandler.getInstance().write(c.getKey(), message);
+            MsgHandler.getInstance().write(c.getChannel(), message);
         }
     }
 

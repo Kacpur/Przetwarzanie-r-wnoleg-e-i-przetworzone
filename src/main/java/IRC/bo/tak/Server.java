@@ -14,13 +14,11 @@ import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.SocketAddress;
-import java.nio.ByteBuffer;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
 import java.util.*;
-import java.util.stream.Collectors;
 
 
 public class Server extends VarMap implements Runnable {
@@ -33,6 +31,7 @@ public class Server extends VarMap implements Runnable {
     public static final String VERSION = "0.0.1";
 
     private Map<String, Channel> channels;
+    private List<Client> clients;
 
     public static void main(String[] args) throws Exception {
         Server server = new Server("localhost", 8090);
@@ -46,6 +45,24 @@ public class Server extends VarMap implements Runnable {
         dataMapper = new HashMap<SocketChannel, List>();
         channels = Collections.synchronizedMap(new CaseInsensitiveMap<>());
         host = InetAddress.getLocalHost();
+        clients = Collections.synchronizedList(new ArrayList<Client>());
+        //TODO Zmienic
+        motd = new ArrayList<>();
+        motd.add("TEST");
+        motd.add("TEST");
+        motd.add("TEST");
+        motd.add("TEST");
+        motd.add("TEST");
+        motd.add("TEST");
+        motd.add("TEST");
+        motd.add("TEST");
+        motd.add("TEST");
+
+        putString("sName",  "michal-napior");
+        putInteger("sMaxConns",  1028);
+        putInteger("cMaxConns",  10);
+        putInteger("cPingTime", 600);
+        putInteger("cIdentTime",300);
     }
 
     // create server channel
@@ -80,16 +97,18 @@ public class Server extends VarMap implements Runnable {
                 if (key.isAcceptable()) {
                     this.accept(key);
                 } else if (key.isReadable()) {
-                    String msg = MsgHandler.getInstance().read(key);
-                    MsgHandler.getInstance().acceptNewClient(key);
-                    MsgHandler.getInstance().handdleMessage(msg,key);
+                    SocketChannel channel = (SocketChannel) key.channel();
+                    String msg = MsgHandler.getInstance().read(channel);
+                    MsgHandler.getInstance().acceptNewClient(channel);
+                    MsgHandler.getInstance().handdleMessage(msg, channel);
+                    MsgHandler.getInstance().acceptNewClient(channel);
                 }
             }
         }
     }
 
     //accept a connection made to this channel's socket
-    private void accept(SelectionKey key) throws IOException {
+    private SocketChannel accept(SelectionKey key) throws IOException {
         ServerSocketChannel serverChannel = (ServerSocketChannel) key.channel();
         SocketChannel channel = serverChannel.accept();
         channel.configureBlocking(false);
@@ -100,6 +119,7 @@ public class Server extends VarMap implements Runnable {
         // register channel with selector for further IO
         dataMapper.put(channel, new ArrayList());
         channel.register(this.selector, SelectionKey.OP_READ);
+        return channel;
     }
 
     @Override
@@ -133,12 +153,11 @@ public class Server extends VarMap implements Runnable {
     }
 
     public synchronized Client getClient(String key){
-        Optional<SelectionKey> key1 = selector.keys().stream().filter(k -> ((Client)k.attachment()).getNick().equals(key)).findFirst();
-        return key1.isPresent() ? (Client) key1.get().attachment() : null;
+        return clients.stream().filter(k -> k.getNick().equals(key)).findFirst().get();
     }
 
-    public synchronized Map<String, Client> getClients(){
-        return selector.keys().stream().map(k ->(Client) k.attachment()).collect(Collectors.toMap(Client::getNick,k -> k));
+    public synchronized List<Client> getClients(){
+        return clients;
     }
 
     public List<String> getMotd() {
@@ -147,5 +166,10 @@ public class Server extends VarMap implements Runnable {
 
     public void setMotd(List<String> motd) {
         this.motd = motd;
+    }
+
+    public synchronized Optional<Client> getClientByChannel(SocketChannel channel){
+        return clients.stream().filter(k -> k.getChannel().equals(channel)).findFirst();
+
     }
 }
