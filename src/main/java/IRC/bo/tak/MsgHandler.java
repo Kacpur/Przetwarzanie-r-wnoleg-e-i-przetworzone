@@ -169,7 +169,7 @@ public class MsgHandler {
                             Channel channel1 = client.getChannel(params.get(0));
 
                             if (channel1 != null) {
-                                channel1.sendMsgAndFlush(client, new ServMessage(getServer(), command, params.get(0), privmsg));
+                                channel1.sendMsgAndFlush(client, new ServMessage(client, command, params.get(0), privmsg));
                             }
                         } else {
                             Client c = getServer().getClient(params.get(0));
@@ -315,11 +315,10 @@ public class MsgHandler {
         }
     }
 
-    public void sendRoomName(Client client){
+    public void sendRoomName(Client client) {
         Iterator<Map.Entry<String, Channel>> i = getServer().getChannels().entrySet().iterator();
 
-        while (i.hasNext())
-        {
+        while (i.hasNext()) {
             Map.Entry<String, Channel> e = i.next();
             Channel c = (Channel) e.getValue();
             client.sendMsgAndFlush(new ServMessage(MsgHandler.getInstance().getServer(), Commands.RPL_LIST, c.getName()));
