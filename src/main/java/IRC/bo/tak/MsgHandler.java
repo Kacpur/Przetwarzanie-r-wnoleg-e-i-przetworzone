@@ -318,10 +318,12 @@ public class MsgHandler {
     public void sendRoomName(Client client) {
         Iterator<Map.Entry<String, Channel>> i = getServer().getChannels().entrySet().iterator();
 
+        client.sendMsg(new ServMessage(MsgHandler.getInstance().getServer(), Commands.RPL_LISTSTATRT, client.getNick(), "Channels:"+client.getNick()));
         while (i.hasNext()) {
             Map.Entry<String, Channel> e = i.next();
             Channel c = (Channel) e.getValue();
-            client.sendMsgAndFlush(new ServMessage(MsgHandler.getInstance().getServer(), Commands.RPL_LIST, c.getName()));
+            client.sendMsgAndFlush(new ServMessage(MsgHandler.getInstance().getServer(), Commands.RPL_LIST, client.getNick(), c.getName(), String.valueOf(c.getClients().keySet().size()),c.getTopic()));
         }
+        client.sendMsg(new ServMessage(MsgHandler.getInstance().getServer(), Commands.RPL_LISTEND, client.getNick(), ":End of /LIST"));
     }
 }
