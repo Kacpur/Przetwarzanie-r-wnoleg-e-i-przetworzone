@@ -58,11 +58,11 @@ public class Server extends VarMap implements Runnable {
         motd.add("TEST");
         motd.add("TEST");
 
-        putString("sName",  "michal-napior");
-        putInteger("sMaxConns",  1028);
-        putInteger("cMaxConns",  10);
+        putString("sName", "michal-napior");
+        putInteger("sMaxConns", 1028);
+        putInteger("cMaxConns", 10);
         putInteger("cPingTime", 600);
-        putInteger("cIdentTime",300);
+        putInteger("cIdentTime", 300);
     }
 
     // create server channel
@@ -97,11 +97,15 @@ public class Server extends VarMap implements Runnable {
                 if (key.isAcceptable()) {
                     this.accept(key);
                 } else if (key.isReadable()) {
-                    SocketChannel channel = (SocketChannel) key.channel();
-                    String msg = MsgHandler.getInstance().read(channel);
-                    MsgHandler.getInstance().acceptNewClient(channel);
-                    MsgHandler.getInstance().handdleMessage(msg, channel);
-                    MsgHandler.getInstance().acceptNewClient(channel);
+                    try {
+                        SocketChannel channel = (SocketChannel) key.channel();
+                        String msg = MsgHandler.getInstance().read(channel);
+                        MsgHandler.getInstance().acceptNewClient(channel);
+                        MsgHandler.getInstance().handdleMessage(msg, channel);
+                        MsgHandler.getInstance().acceptNewClient(channel);
+                    } catch (Exception e){
+                        key.cancel();
+                    }
                 }
             }
         }
@@ -147,16 +151,15 @@ public class Server extends VarMap implements Runnable {
         return channels;
     }
 
-    public synchronized Channel getChannel(String key)
-    {
+    public synchronized Channel getChannel(String key) {
         return channels.get(key);
     }
 
-    public synchronized Client getClient(String key){
+    public synchronized Client getClient(String key) {
         return clients.stream().filter(k -> k.getNick().equals(key)).findFirst().get();
     }
 
-    public synchronized List<Client> getClients(){
+    public synchronized List<Client> getClients() {
         return clients;
     }
 
@@ -168,7 +171,7 @@ public class Server extends VarMap implements Runnable {
         this.motd = motd;
     }
 
-    public synchronized Optional<Client> getClientByChannel(SocketChannel channel){
+    public synchronized Optional<Client> getClientByChannel(SocketChannel channel) {
         return clients.stream().filter(k -> k.getChannel().equals(channel)).findFirst();
 
     }

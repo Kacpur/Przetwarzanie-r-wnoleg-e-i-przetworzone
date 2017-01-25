@@ -210,6 +210,8 @@ public class MsgHandler {
                 case "QUIT":
                     client.quitChannels(message.getParameter(0));
                     client.setState(ConnectionState.DISCONNECTED);
+                    server.getClients().remove(client);
+                    server.getDataMapper().remove(client.getChannel());
                     break;
                 case "LIST":
                     sendRoomName(client);
