@@ -9,4 +9,12 @@
     <string name="title_activity_login">LoginActivity</string>
     <string name="title_activity_channe_list">ChanneListActivity</string>
     <string name="title_activity_user_list">UserListActivity</string>
+    <string name="userList">Użytkownicy</string>
+    <string name="channelList">Kanały</string>
+    <string name="send">Wyślij</string>
+    <string name="add">Dodaj</string>
+    <string name="addChanell">Dodaj kanał</string>
+    <string name="sendPrivateMsg">Wyślij prywatną wiadomość do </string>
+    <string name="nick">Nick</string>
+    <string name="adress">adress</string>
 </resources>
