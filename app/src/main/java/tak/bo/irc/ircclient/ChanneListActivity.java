@@ -25,6 +25,7 @@ public class ChanneListActivity extends AppCompatActivity {
             }
         });
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
     }
 
 }

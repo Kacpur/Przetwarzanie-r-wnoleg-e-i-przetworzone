@@ -23,12 +23,23 @@
 
     <include layout="@layout/content_chat" />
 
-    <android.support.design.widget.FloatingActionButton
-        android:id="@+id/fab"
+    <Button
+        android:text="@string/send"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"
-        android:layout_margin="@dimen/fab_margin"
-        app:srcCompat="@android:drawable/ic_dialog_email" />
+        android:id="@+id/button"
+        android:onClick="wyslij" />
+
+    <EditText
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:inputType="textPersonName"
+        android:layout_gravity="bottom|start"
+        android:text=""
+        android:scrollbars="vertical"
+        android:maxLines="5"
+        android:ems="10"
+        android:id="@+id/editText2" />
 
 </android.support.design.widget.CoordinatorLayout>

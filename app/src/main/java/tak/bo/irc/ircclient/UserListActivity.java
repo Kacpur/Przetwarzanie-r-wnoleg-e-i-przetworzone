@@ -24,6 +24,8 @@ public class UserListActivity extends AppCompatActivity {
                         .setAction("Action", null).show();
             }
         });
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
     }
 
 }
