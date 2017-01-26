@@ -39,10 +39,12 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="tak.bo.irc.ircclient.ChatActivity" />
         </activity>
+
         <service
             android:name=".ConnectionService"
+            android:process=":connection_process"
             android:enabled="true"
-            android:exported="true"></service>
+            android:exported="true" />
     </application>
 
 </manifest>
