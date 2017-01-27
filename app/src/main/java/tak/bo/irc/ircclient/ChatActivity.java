@@ -1,7 +1,12 @@
 package tak.bo.irc.ircclient;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.graphics.Color;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AlertDialog;
@@ -16,12 +21,17 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
+
+import java.util.List;
 
 public class ChatActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
     private String nick;
     private String addres;
+    private ServerReceiver serverReceiver;
+    public static final String KANAL = "#lol";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,6 +39,8 @@ public class ChatActivity extends AppCompatActivity
 
         nick = (String) getIntent().getExtras().get(LoginActivity.NICK);
         addres = (String) getIntent().getExtras().get(LoginActivity.ADRESS);
+        initService();
+        initReceiver();
 
         setContentView(R.layout.activity_chat);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -42,6 +54,36 @@ public class ChatActivity extends AppCompatActivity
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+    }
+
+    private void initService() {
+        Intent intent = new Intent(this, Server.class);
+        intent.putExtra(LoginActivity.NICK, nick);
+        startService(intent);
+    }
+
+    private void initReceiver() {
+        serverReceiver = new ServerReceiver();
+        IntentFilter filter = new IntentFilter(ServerReceiver.ACTION_NEW_MSG);
+        registerReceiver(serverReceiver, filter);
+    }
+
+
+    @Override
+    protected void onDestroy() {
+        finishService();
+        finishReceiver();
+        super.onDestroy();
+    }
+
+    private void finishService() {
+        Intent intent = new Intent(this, Server.class);
+        stopService(intent);
+    }
+
+
+    private void finishReceiver() {
+        unregisterReceiver(serverReceiver);
     }
 
     @Override
@@ -89,10 +131,10 @@ public class ChatActivity extends AppCompatActivity
         } else if (id == R.id.nav_add) {
             createChannel();
         } else {
-            if(item.getIcon().getConstantState().equals(
-                    getResources().getDrawable(R.drawable.ic_user).getConstantState())){
+            if (item.getIcon().getConstantState().equals(
+                    getResources().getDrawable(R.drawable.ic_user).getConstantState())) {
                 sendPrivateMsg(item.getTitle().toString());
-            } else if(item.getIcon().getConstantState().equals(
+            } else if (item.getIcon().getConstantState().equals(
                     getResources().getDrawable(R.drawable.ic_channel).getConstantState())) {
                 dodaj("System", item.getTitle().toString());
             }
@@ -113,8 +155,15 @@ public class ChatActivity extends AppCompatActivity
 
     public void wyslij(View v) {
         EditText editText = (EditText) findViewById(R.id.editText2);
-        dodaj(this.nick, editText.getText().toString());
-        addToNavigation(editText.getText().toString(), true);
+//        dodaj(this.nick, editText.getText().toString());
+//        addToNavigation(editText.getText().toString(), true);
+//        editText.setText("");
+        Intent intent = new Intent();
+        intent.setAction(tak.bo.irc.ircclient.service.Server.ClientReceiver.ACTION_NEW_MSG);
+        intent.putExtra("COMMAND", "PRIVMSG");
+        intent.putExtra("PRIVMSG", editText.getText().toString());
+        this.sendBroadcast(intent);
+        editText.setText("");
     }
 
     public void dodaj(String nick, String msg) {
@@ -122,17 +171,17 @@ public class ChatActivity extends AppCompatActivity
         linearLayout.addView(new MsgView(this, nick, msg).getForm());
     }
 
-    public void addToNavigation(String title, boolean user){
+    public void addToNavigation(String title, boolean user) {
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         MenuItem newItem = navigationView.getMenu().add(title);
-        if(user) {
+        if (user) {
             newItem.setIcon(R.drawable.ic_user);
         } else {
             newItem.setIcon(R.drawable.ic_channel);
         }
     }
 
-    private void createChannel(){
+    private void createChannel() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle(R.string.addChanell);
 
@@ -144,7 +193,7 @@ public class ChatActivity extends AppCompatActivity
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 String m_Text = input.getText().toString();
-                addToNavigation(m_Text,false);
+                addToNavigation(m_Text, false);
             }
         });
         builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
@@ -157,7 +206,7 @@ public class ChatActivity extends AppCompatActivity
         builder.show();
     }
 
-    private void sendPrivateMsg(final String who){
+    private void sendPrivateMsg(final String who) {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         StringBuilder title = new StringBuilder()
                 .append(getResources().getString(R.string.sendPrivateMsg))
@@ -173,7 +222,7 @@ public class ChatActivity extends AppCompatActivity
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 String m_Text = input.getText().toString();
-                dodaj(who,m_Text);
+                dodaj(who, m_Text);
             }
         });
         builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
@@ -184,6 +233,31 @@ public class ChatActivity extends AppCompatActivity
         });
 
         builder.show();
+    }
+
+    public class ServerReceiver extends BroadcastReceiver {
+
+        public static final String ACTION_NEW_MSG = "tak.bo.irc.ircclient.SERVER";
+
+        public ServerReceiver() {
+        }
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if (intent.getAction().equals(ACTION_NEW_MSG)) {
+                String command = intent.getStringExtra("COMMAND");
+                String prefix = intent.getStringExtra("PREFIX");
+                List<String> params = intent.getStringArrayListExtra("PARAMS");
+                StringBuilder sb = new StringBuilder();
+                for (String s : params)
+                {
+                    sb.append(s);
+                    sb.append(", ");
+                }
+                System.out.println("_______________________"+command + " " + prefix + " " + sb.toString());
+                dodaj(prefix.split("!")[0],params.get(params.size()-1));
+            }
+        }
     }
 
 }

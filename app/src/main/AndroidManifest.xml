@@ -1,5 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="tak.bo.irc.ircclient">
+
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+    <uses-permission android:name="android.permission.INTERNET" />
 
     <application
         android:allowBackup="true"
@@ -39,10 +43,11 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="tak.bo.irc.ircclient.ChatActivity" />
         </activity>
+
         <service
-            android:name=".ConnectionService"
+            android:name=".Server"
             android:enabled="true"
-            android:exported="true"></service>
+            android:exported="true" />
     </application>
 
 </manifest>

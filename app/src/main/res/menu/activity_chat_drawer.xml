@@ -16,7 +16,7 @@
             android:title="@string/add" />
     </group>
 
-    <item android:title="Zakłądki">
+    <item android:title="Zakładki">
         <menu>
 
         </menu>
