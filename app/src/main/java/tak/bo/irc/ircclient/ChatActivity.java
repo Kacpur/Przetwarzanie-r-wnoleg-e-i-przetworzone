@@ -31,7 +31,7 @@ public class ChatActivity extends AppCompatActivity
     private String nick;
     private String addres;
     private ServerReceiver serverReceiver;
-    public static final String KANAL = "#lol";
+    public static String KANAL = "#lol";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -137,6 +137,7 @@ public class ChatActivity extends AppCompatActivity
             } else if (item.getIcon().getConstantState().equals(
                     getResources().getDrawable(R.drawable.ic_channel).getConstantState())) {
                 dodaj("System", item.getTitle().toString());
+                KANAL = item.getTitle().toString();
             }
         }
 
@@ -162,6 +163,7 @@ public class ChatActivity extends AppCompatActivity
         intent.setAction(tak.bo.irc.ircclient.service.Server.ClientReceiver.ACTION_NEW_MSG);
         intent.putExtra("COMMAND", "PRIVMSG");
         intent.putExtra("PRIVMSG", editText.getText().toString());
+        dodaj(this.nick, editText.getText().toString());
         this.sendBroadcast(intent);
         editText.setText("");
     }
@@ -194,6 +196,13 @@ public class ChatActivity extends AppCompatActivity
             public void onClick(DialogInterface dialog, int which) {
                 String m_Text = input.getText().toString();
                 addToNavigation(m_Text, false);
+                Intent intent = new Intent();
+                intent.setAction(tak.bo.irc.ircclient.service.Server.ClientReceiver.ACTION_NEW_MSG);
+                intent.putExtra("COMMAND", "JOIN");
+                intent.putExtra("PRIVMSG", m_Text);
+                sendBroadcast(intent);
+                KANAL = m_Text;
+
             }
         });
         builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {

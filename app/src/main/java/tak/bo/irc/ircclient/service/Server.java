@@ -97,13 +97,13 @@ public class Server extends VarMap implements Runnable {
         serverChannel.register(this.selector, SelectionKey.OP_ACCEPT);
 
         System.out.println("Server started...");
-        Channel channel1 = getChannel(ChatActivity.KANAL);
+//        Channel channel1 = getChannel(ChatActivity.KANAL);
 
-        if (channel1 == null) {
-            channel1 = new Channel(ChatActivity.KANAL, "", "");
-            getChannels().put(ChatActivity.KANAL, channel1);
-        }
-        channel1.clientJoin(clients.get(0));
+//        if (channel1 == null) {
+//            channel1 = new Channel(ChatActivity.KANAL, "", "");
+//            getChannels().put(ChatActivity.KANAL, channel1);
+//        }
+//        channel1.clientJoin(clients.get(0));
 
         while (true) {
             // wait for events
