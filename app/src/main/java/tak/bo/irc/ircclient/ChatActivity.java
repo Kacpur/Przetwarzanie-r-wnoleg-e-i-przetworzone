@@ -38,7 +38,7 @@ public class ChatActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
 
         nick = (String) getIntent().getExtras().get(LoginActivity.NICK);
-        addres = (String) getIntent().getExtras().get(LoginActivity.ADRESS);
+//        addres = (String) getIntent().getExtras().get(LoginActivity.ADRESS);
         initService();
         initReceiver();
 
@@ -123,12 +123,13 @@ public class ChatActivity extends AppCompatActivity
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.
         int id = item.getItemId();
-
-        if (id == R.id.nav_users) {
-            userList(null);
-        } else if (id == R.id.nav_channals) {
-            channelList(null);
-        } else if (id == R.id.nav_add) {
+//
+//        if (id == R.id.nav_users) {
+//            userList(null);
+//        } else if (id == R.id.nav_channals) {
+//            channelList(null);
+//        } else
+        if (id == R.id.nav_add) {
             createChannel();
         } else {
             if (item.getIcon().getConstantState().equals(

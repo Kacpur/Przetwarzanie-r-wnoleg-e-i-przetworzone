@@ -28,11 +28,11 @@ public class LoginActivity extends AppCompatActivity {
 
     public void login(View v) {
         EditText nick = (EditText) findViewById(R.id.editTextNick);
-        EditText address = (EditText) findViewById(R.id.editTextAdress);
+//        EditText address = (EditText) findViewById(R.id.editTextAdress);
         Intent chat = new Intent(this, ChatActivity.class);
 //        startActivity(new Intent(this, ChatActivity.class));
         chat.putExtra(LoginActivity.NICK, nick.getText().toString());
-        chat.putExtra(LoginActivity.ADRESS, address.getText().toString());
+//        chat.putExtra(LoginActivity.ADRESS, address.getText().toString());
         startActivity(chat);
     }
 
