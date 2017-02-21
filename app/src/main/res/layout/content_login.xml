@@ -24,7 +24,7 @@
         android:layout_marginTop="56dp"
         android:id="@+id/editTextNick" />
 
-    <EditText
+    <!--EditText
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:inputType="textPersonName"
@@ -33,5 +33,5 @@
         android:layout_below="@+id/editTextNick"
         android:layout_alignEnd="@+id/editTextNick"
         android:layout_marginTop="23dp"
-        android:id="@+id/editTextAdress" />
+        android:id="@+id/editTextAdress" /-->
 </RelativeLayout>
